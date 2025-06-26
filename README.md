@@ -1,4 +1,4 @@
-# Recipe Helper App 🍳
+# Cuisine Companion App 🍳
 
 A user-friendly web application designed specifically for elderly people to discover delicious recipes based on available ingredients. The app supports three convenient input methods: text input, photo recognition, and voice commands.
 
@@ -27,37 +27,43 @@ A user-friendly web application designed specifically for elderly people to disc
 ## Installation
 
 1. **Clone the repository**:
+
    ```bash
    git clone https://github.com/yourusername/recipe-helper-app.git
    cd recipe-helper-app
    ```
 
 2. **Install dependencies**:
+
    ```bash
    pip install streamlit openai pillow speechrecognition
    ```
-   
+
    Or if you're using the provided configuration:
+
    ```bash
    pip install -r pyproject.toml
    ```
 
 3. **Set up environment variables**:
    Create a `.env` file in the project root (recommended), or set the environment variable in your terminal:
-   
+
    **On Windows (cmd.exe):**
+
    ```cmd
    set OPENAI_API_KEY=your-openai-api-key-here
    ```
-   
+
    **On macOS/Linux (bash):**
+
    ```bash
    export OPENAI_API_KEY="your-openai-api-key-here"
    ```
-   
-   *(If you use a `.env` file, you may need to install the `python-dotenv` package and add a line to your code to load it. Let us know if you want this!)*
+
+   _(If you use a `.env` file, you may need to install the `python-dotenv` package and add a line to your code to load it. Let us know if you want this!)_
 
    **How to get an OpenAI API key**:
+
    - Visit [platform.openai.com](https://platform.openai.com)
    - Create an account or sign in
    - Navigate to API Keys section
@@ -68,6 +74,7 @@ A user-friendly web application designed specifically for elderly people to disc
 
 1. **Start the application**:
    In the same terminal where you set the environment variable (if not using a `.env` file), run:
+
    ```cmd
    streamlit run app.py --server.port 5000
    ```
@@ -78,18 +85,21 @@ A user-friendly web application designed specifically for elderly people to disc
 ## How to Use
 
 ### Method 1: Text Input
+
 1. Click on the "📝 Type Ingredients" tab
 2. Enter your ingredients separated by commas (e.g., "chicken, rice, onions, tomatoes")
 3. Click "Add These Ingredients"
 4. Click "🍽️ Get Recipe Suggestions" to generate recipes
 
 ### Method 2: Photo Recognition
+
 1. Click on the "📷 Photo of Ingredients" tab
 2. Upload a photo of your ingredients (PNG, JPG, or JPEG format)
 3. Click "🔍 Recognize Ingredients from Photo"
 4. Review the identified ingredients and generate recipes
 
 ### Method 3: Voice Input
+
 1. Click on the "🎤 Voice Input" tab
 2. Upload an audio file (WAV, MP3, or M4A) where you mention your ingredients
 3. Click "🎧 Convert Speech to Text"
@@ -132,15 +142,18 @@ The application uses several OpenAI services:
 ### Common Issues
 
 1. **"OPENAI_API_KEY environment variable is not set"**
+
    - Ensure you've set the OpenAI API key as an environment variable
    - Check that the key is valid and has sufficient credits
 
 2. **Photo recognition not working**
+
    - Ensure the photo is clear and well-lit
    - Supported formats: PNG, JPG, JPEG
    - Try taking a photo with better lighting or closer to ingredients
 
 3. **Voice input issues**
+
    - Supported audio formats: WAV, MP3, M4A
    - Speak clearly and mention ingredients specifically
    - Ensure audio file is not too long (under 25MB)
