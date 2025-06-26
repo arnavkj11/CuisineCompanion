@@ -14,7 +14,7 @@ from utils import validate_ingredients, format_recipe_display
 
 # Configure page settings for elderly-friendly design
 st.set_page_config(
-    page_title="Recipe Helper",
+    page_title="Cuisine Companion",
     page_icon="🍳",
     layout="wide",
     initial_sidebar_state="collapsed"
@@ -89,7 +89,7 @@ st.markdown("""
 
 def main():
     # Main header
-    st.markdown('<h1 class="main-header">🍳 Recipe Helper</h1>', unsafe_allow_html=True)
+    st.markdown('<h1 class="main-header">🍳 Cuisine Companion</h1>', unsafe_allow_html=True)
     st.markdown('<p class="instruction-text" style="text-align: center;">Tell me what ingredients you have, and I\'ll suggest delicious recipes you can make!</p>', unsafe_allow_html=True)
     
     # Initialize session state
