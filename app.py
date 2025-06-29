@@ -12,7 +12,7 @@ from openai_helper import (
 )
 from utils import validate_ingredients, format_recipe_display
 
-# Configure page settings for elderly-friendly design
+# Configure page settings
 st.set_page_config(
     page_title="Cuisine Companion",
     page_icon="🍳",
@@ -20,74 +20,333 @@ st.set_page_config(
     initial_sidebar_state="collapsed"
 )
 
-# Custom CSS for elderly-friendly design
-st.markdown("""
-<style>
-    .main-header {
-        font-size: 3rem !important;
-        font-weight: bold !important;
-        text-align: center !important;
-        color: #2c3e50 !important;
-        margin-bottom: 2rem !important;
-    }
-    .section-header {
-        font-size: 2rem !important;
-        font-weight: bold !important;
-        color: #34495e !important;
-        margin: 2rem 0 1rem 0 !important;
-    }
-    .instruction-text {
-        font-size: 1.2rem !important;
-        line-height: 1.6 !important;
-        color: #2c3e50 !important;
-        margin-bottom: 1rem !important;
-    }
-    .stButton > button {
-        font-size: 1.5rem !important;
-        padding: 1rem 2rem !important;
-        border-radius: 10px !important;
-        font-weight: bold !important;
-        min-height: 60px !important;
-    }
-    .stTextInput > div > div > input {
-        font-size: 1.3rem !important;
-        padding: 1rem !important;
-    }
-    .stTextArea > div > div > textarea {
-        font-size: 1.3rem !important;
-        padding: 1rem !important;
-    }
-    .recipe-container {
-        background-color: #f8f9fa !important;
-        padding: 2rem !important;
-        border-radius: 15px !important;
-        border: 2px solid #e9ecef !important;
-        margin: 1rem 0 !important;
-    }
-    .ingredient-list {
-        font-size: 1.2rem !important;
-        line-height: 1.8 !important;
-    }
-    .success-message {
-        background-color: #d4edda !important;
-        color: #155724 !important;
-        padding: 1rem !important;
-        border-radius: 10px !important;
-        font-size: 1.2rem !important;
-        margin: 1rem 0 !important;
-    }
-    .error-message {
-        background-color: #f8d7da !important;
-        color: #721c24 !important;
-        padding: 1rem !important;
-        border-radius: 10px !important;
-        font-size: 1.2rem !important;
-        margin: 1rem 0 !important;
-    }
-</style>
-""", unsafe_allow_html=True)
+# Dynamic CSS based on theme selection
+def get_theme_css(is_dark_mode):
+    if is_dark_mode:
+        return """
+        <style>
+            /* Dark Mode Styles */
+            .main .block-container {
+                background: linear-gradient(135deg, #1a1a2e 0%, #16213e 25%, #0f3460 50%, #1a1a2e 100%) !important;
+                color: #ffffff !important;
+            }
+            
+            .main-header {
+                font-size: 3rem !important;
+                font-weight: bold !important;
+                text-align: center !important;
+                color: #64ffda !important;
+                margin-bottom: 2rem !important;
+                text-shadow: 0 0 20px rgba(100, 255, 218, 0.5) !important;
+            }
+            
+            .section-header {
+                font-size: 2rem !important;
+                font-weight: bold !important;
+                color: #bb86fc !important;
+                margin: 2rem 0 1rem 0 !important;
+                text-shadow: 0 0 10px rgba(187, 134, 252, 0.3) !important;
+            }
+            
+            .instruction-text {
+                font-size: 1.2rem !important;
+                line-height: 1.6 !important;
+                color: #e0e0e0 !important;
+                margin-bottom: 1rem !important;
+                background: rgba(255, 255, 255, 0.1) !important;
+                padding: 1rem !important;
+                border-radius: 10px !important;
+                border-left: 4px solid #64ffda !important;
+                backdrop-filter: blur(10px) !important;
+            }
+            
+            .stButton > button {
+                font-size: 1.5rem !important;
+                padding: 1rem 2rem !important;
+                border-radius: 10px !important;
+                font-weight: bold !important;
+                min-height: 60px !important;
+                background: linear-gradient(135deg, #6200ea, #3700b3) !important;
+                color: #ffffff !important;
+                border: 2px solid #bb86fc !important;
+                box-shadow: 0 4px 15px rgba(98, 0, 234, 0.3) !important;
+            }
+            
+            .stButton > button:hover {
+                background: linear-gradient(135deg, #3700b3, #6200ea) !important;
+                box-shadow: 0 6px 20px rgba(98, 0, 234, 0.5) !important;
+                transform: translateY(-2px) !important;
+            }
+            
+            .stButton > button[kind="primary"] {
+                background: linear-gradient(135deg, #64ffda, #00bcd4) !important;
+                color: #000000 !important;
+                border: 2px solid #64ffda !important;
+            }
+            
+            .stTextInput > div > div > input {
+                font-size: 1.3rem !important;
+                padding: 1rem !important;
+                background: rgba(255, 255, 255, 0.1) !important;
+                color: #ffffff !important;
+                border: 2px solid #64ffda !important;
+                border-radius: 10px !important;
+            }
+            
+            .stTextArea > div > div > textarea {
+                font-size: 1.3rem !important;
+                padding: 1rem !important;
+                background: rgba(255, 255, 255, 0.1) !important;
+                color: #ffffff !important;
+                border: 2px solid #64ffda !important;
+                border-radius: 10px !important;
+            }
+            
+            .recipe-container {
+                background: rgba(255, 255, 255, 0.1) !important;
+                padding: 2rem !important;
+                border-radius: 15px !important;
+                border: 2px solid #64ffda !important;
+                margin: 1rem 0 !important;
+                backdrop-filter: blur(10px) !important;
+                color: #ffffff !important;
+            }
+            
+            .ingredient-list {
+                font-size: 1.2rem !important;
+                line-height: 1.8 !important;
+                color: #64ffda !important;
+                background: rgba(100, 255, 218, 0.1) !important;
+                padding: 1rem !important;
+                border-radius: 10px !important;
+                border-left: 4px solid #64ffda !important;
+            }
+            
+            .success-message {
+                background: rgba(76, 175, 80, 0.2) !important;
+                color: #4caf50 !important;
+                padding: 1rem !important;
+                border-radius: 10px !important;
+                font-size: 1.2rem !important;
+                margin: 1rem 0 !important;
+                border: 2px solid #4caf50 !important;
+            }
+            
+            .error-message {
+                background: rgba(244, 67, 54, 0.2) !important;
+                color: #f44336 !important;
+                padding: 1rem !important;
+                border-radius: 10px !important;
+                font-size: 1.2rem !important;
+                margin: 1rem 0 !important;
+                border: 2px solid #f44336 !important;
+            }
+            
+            .stTabs [data-baseweb="tab-list"] {
+                background: rgba(255, 255, 255, 0.1) !important;
+                border-radius: 10px !important;
+            }
+            
+            .stTabs [data-baseweb="tab"] {
+                color: #bb86fc !important;
+                font-weight: bold !important;
+            }
+            
+            .stTabs [aria-selected="true"] {
+                background: rgba(100, 255, 218, 0.2) !important;
+                color: #64ffda !important;
+            }
+            
+            .stSelectbox > div > div {
+                background: rgba(255, 255, 255, 0.1) !important;
+                color: #ffffff !important;
+                border: 2px solid #64ffda !important;
+            }
+            
+            .theme-toggle {
+                position: fixed !important;
+                top: 1rem !important;
+                right: 1rem !important;
+                z-index: 999 !important;
+                background: rgba(100, 255, 218, 0.2) !important;
+                padding: 0.5rem !important;
+                border-radius: 25px !important;
+                border: 2px solid #64ffda !important;
+            }
+        </style>
+        """
+    else:
+        return """
+        <style>
+            /* Light Mode Styles - White and Gray Theme */
+            .main .block-container {
+                background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 25%, #e9ecef 50%, #dee2e6 100%) !important;
+                color: #2c3e50 !important;
+            }
+            
+            .main-header {
+                font-size: 3rem !important;
+                font-weight: bold !important;
+                text-align: center !important;
+                color: #2c3e50 !important;
+                margin-bottom: 2rem !important;
+                text-shadow: 2px 2px 4px rgba(0,0,0,0.1) !important;
+            }
+            
+            .section-header {
+                font-size: 2rem !important;
+                font-weight: bold !important;
+                color: #495057 !important;
+                margin: 2rem 0 1rem 0 !important;
+            }
+            
+            .instruction-text {
+                font-size: 1.2rem !important;
+                line-height: 1.6 !important;
+                color: #2c3e50 !important;
+                margin-bottom: 1rem !important;
+                background: rgba(255, 255, 255, 0.9) !important;
+                padding: 1rem !important;
+                border-radius: 10px !important;
+                border-left: 4px solid #6c757d !important;
+                box-shadow: 0 2px 10px rgba(0,0,0,0.1) !important;
+            }
+            
+            .stButton > button {
+                font-size: 1.5rem !important;
+                padding: 1rem 2rem !important;
+                border-radius: 10px !important;
+                font-weight: bold !important;
+                min-height: 60px !important;
+                background: linear-gradient(135deg, #6c757d, #495057) !important;
+                color: #ffffff !important;
+                border: 2px solid #6c757d !important;
+                box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3) !important;
+            }
+            
+            .stButton > button:hover {
+                background: linear-gradient(135deg, #495057, #343a40) !important;
+                box-shadow: 0 6px 20px rgba(108, 117, 125, 0.4) !important;
+                transform: translateY(-2px) !important;
+            }
+            
+            .stButton > button[kind="primary"] {
+                background: linear-gradient(135deg, #343a40, #212529) !important;
+                color: #ffffff !important;
+                border: 2px solid #343a40 !important;
+            }
+            
+            .stTextInput > div > div > input {
+                font-size: 1.3rem !important;
+                padding: 1rem !important;
+                background: rgba(255, 255, 255, 0.95) !important;
+                color: #2c3e50 !important;
+                border: 2px solid #ced4da !important;
+                border-radius: 10px !important;
+            }
+            
+            .stTextArea > div > div > textarea {
+                font-size: 1.3rem !important;
+                padding: 1rem !important;
+                background: rgba(255, 255, 255, 0.95) !important;
+                color: #2c3e50 !important;
+                border: 2px solid #ced4da !important;
+                border-radius: 10px !important;
+            }
+            
+            .recipe-container {
+                background: rgba(255, 255, 255, 0.95) !important;
+                padding: 2rem !important;
+                border-radius: 15px !important;
+                border: 2px solid #dee2e6 !important;
+                margin: 1rem 0 !important;
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1) !important;
+                color: #2c3e50 !important;
+            }
+            
+            .ingredient-list {
+                font-size: 1.2rem !important;
+                line-height: 1.8 !important;
+                color: #2c3e50 !important;
+                background: rgba(248, 249, 250, 0.8) !important;
+                padding: 1rem !important;
+                border-radius: 10px !important;
+                border-left: 4px solid #6c757d !important;
+            }
+            
+            .success-message {
+                background: rgba(212, 237, 218, 0.8) !important;
+                color: #155724 !important;
+                padding: 1rem !important;
+                border-radius: 10px !important;
+                font-size: 1.2rem !important;
+                margin: 1rem 0 !important;
+                border: 2px solid #c3e6cb !important;
+            }
+            
+            .error-message {
+                background: rgba(248, 215, 218, 0.8) !important;
+                color: #721c24 !important;
+                padding: 1rem !important;
+                border-radius: 10px !important;
+                font-size: 1.2rem !important;
+                margin: 1rem 0 !important;
+                border: 2px solid #f5c6cb !important;
+            }
+            
+            .stTabs [data-baseweb="tab-list"] {
+                background: rgba(255, 255, 255, 0.9) !important;
+                border-radius: 10px !important;
+                border: 1px solid #dee2e6 !important;
+            }
+            
+            .stTabs [data-baseweb="tab"] {
+                color: #6c757d !important;
+                font-weight: bold !important;
+            }
+            
+            .stTabs [aria-selected="true"] {
+                background: rgba(248, 249, 250, 0.8) !important;
+                color: #495057 !important;
+            }
+            
+            .stSelectbox > div > div {
+                background: rgba(255, 255, 255, 0.95) !important;
+                color: #2c3e50 !important;
+                border: 2px solid #ced4da !important;
+            }
+            
+            .theme-toggle {
+                position: fixed !important;
+                top: 1rem !important;
+                right: 1rem !important;
+                z-index: 999 !important;
+                background: rgba(255, 255, 255, 0.95) !important;
+                padding: 0.5rem !important;
+                border-radius: 25px !important;
+                border: 2px solid #dee2e6 !important;
+            }
+        </style>
+        """
+
+
 
 def main():
+    # Initialize session state for theme
+    if 'dark_mode' not in st.session_state:
+        st.session_state.dark_mode = False
+    
+    # Theme toggle in sidebar/top
+    col1, col2, col3 = st.columns([4, 1, 1])
+    with col3:
+        theme_button_text = "🌙 Dark" if not st.session_state.dark_mode else "☀️ Light"
+        if st.button(theme_button_text, key="theme_toggle"):
+            st.session_state.dark_mode = not st.session_state.dark_mode
+            st.rerun()
+    
+    # Apply theme CSS
+    st.markdown(get_theme_css(st.session_state.dark_mode), unsafe_allow_html=True)
+    
     # Main header
     st.markdown('<h1 class="main-header">🍳 Cuisine Companion</h1>', unsafe_allow_html=True)
     st.markdown('<p class="instruction-text" style="text-align: center;">Tell me what ingredients you have, and I\'ll suggest delicious recipes you can make!</p>', unsafe_allow_html=True)
